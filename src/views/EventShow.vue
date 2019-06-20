@@ -1,9 +1,9 @@
 <template>
   <div>
     <div class="event-header">
-          <span class="eyebrow">@{{ event.time }} on {{ event.date }}</span>
+          <span class="eyebrow">@{{ event.time }} on {{ event.date | date}}</span>
           <h1 class="title">{{ event.title }}</h1>
-          <h5>Organized by {{ event.organizer }}</h5>
+          <h5>Organized by {{ event.organizer ? event.organizer.name : null }}</h5>
           <h5>Category: {{ event.category }}</h5>
         </div>
         <BaseIcon name="map"><h2>Location</h2></BaseIcon>
@@ -21,24 +21,17 @@
   </div>
 </template>
 <script>
-import EventService from '../services/EventService';
+import {mapState, mapActions} from 'vuex';
+import NProgress from 'nprogress';
+import store from '@/store/store';
 
   export default {
-    props: ['id'],
-    data() {
-      return {
-        event: {},
+    props: {
+      event: {
+        type: Object,
+        required: true
       }
     },
-    created() {
-      EventService.getEvent(this.id)
-      .then(response => {
-        this.event = response.data;
-      })
-      .catch(err => {
-        console.log('error ', err);
-      });
-    }
   }
 </script>
 

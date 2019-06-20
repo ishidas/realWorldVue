@@ -1,15 +1,19 @@
 <template>
   <div id="app">
     <NavBar/>
-    <router-view/>
+    <NotificationContainer/>
+    <router-view :key="$route.fullPath"/>
   </div>
 </template>
 <script>
 import NavBar from './components/NavBar';
+import NotificationContainer from './components/NotificationContainer';
 
 export default {
+
   components: {
     NavBar,
+    NotificationContainer
   }
 }
 </script>
@@ -85,6 +89,9 @@ strong {
 }
 small {
   font-size: 80%;
+}
+.error {
+  border: 1px solid red;
 }
 .eyebrow {
   font-size: 20px;
@@ -236,5 +243,11 @@ select:focus::ms-value {
 }
 select::ms-expand {
   opacity: 0;
+}
+.error {
+  border: 1px solid red;
+}
+.errorMessage {
+  color: red;
 }
 </style>

@@ -1,31 +1,47 @@
 <template>
   <div>
-    <h1>EventList</h1>
-    <EventCard v-for="event in events" :key="event.id" :event="event" />
+    <h1>EventList {{user.user.name}}</h1>
+    <EventCard v-for="e in event.events" :key="e.id" :event="e" />
+    <template v-if="page != 1">
+      <router-link :to="{name: 'event-list', query: {page: page - 1}}" rel='prev'>Prev Page</router-link>
+    </template>
+    <template v-if="page <= event.pageCounts">
+      <router-link :to="{name: 'event-list', query: {page: page + 1}}" rel='next'>Next Page</router-link>
+    </template>
   </div>
 </template>
 
 <script>
-import EventService from '../services/EventService';
 import EventCard from '../components/EventCard.vue';
+import {mapState} from 'vuex';
+import store from '@/store/store';
+
+function getPageEvents(routeTo, next) {
+  const currentPage = routeTo.query.page || 1;
+  store.dispatch('event/fetchEvents', {page: currentPage})
+  .then(() => {
+    routeTo.params.page = currentPage;
+    next();
+  })
+}
   export default {
     components: {
       EventCard,
     },
-    data() {
-      return {
-        events: []
-      }
+    props: {
+      page: {
+        type: Number,
+        required: true
+      },
     },
-    created() {
-      EventService.getEvents()
-      .then(response => {
-        console.log(response.data);
-        this.events = response.data;
-      })
-      .catch(error => {
-        console.log('There was an error ', error)
-      })
+    beforeRouteEnter(routeTo, routeFrom, next) {
+      getPageEvents(routeTo, next)
+    },
+    beforeRouteUpdate(routeTo, routeFrom, next) {
+      getPageEvents(routeTo, next)
+    },
+    computed: {
+      ...mapState(['event', 'user']),
     }
   }
 </script>
